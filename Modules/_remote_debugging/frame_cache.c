@@ -96,6 +96,7 @@ frame_cache_invalidate_stale(RemoteUnwinderObject *unwinder, PyObject *result)
         PyObject *interp_info = PyList_GET_ITEM(result, i);
         PyObject *threads = PyStructSequence_GetItem(interp_info, 1);
         if (!threads || !PyList_Check(threads)) {
+            Py_XDECREF(threads);
             continue;
         }
         Py_ssize_t num_threads = PyList_GET_SIZE(threads);
@@ -109,8 +110,10 @@ frame_cache_invalidate_stale(RemoteUnwinderObject *unwinder, PyObject *result)
                 } else {
                     PyErr_Clear();
                 }
+                Py_DECREF(tid_obj);
             }
         }
+        Py_DECREF(threads);
     }
 
     // Invalidate entries not in seen list
